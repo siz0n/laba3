@@ -1,5 +1,14 @@
 {
     "files.associations": {
-        "random": "cpp"
+        "random": "cpp",
+        "iostream": "cpp",
+        "iomanip": "cpp",
+        "ostream": "cpp",
+        "vector": "cpp",
+        "tuple": "cpp",
+        "sstream": "cpp",
+        "string": "cpp",
+        "format": "cpp",
+        "unordered_map": "cpp"
     }
 }

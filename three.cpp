@@ -1,46 +1,54 @@
 #include <iostream>
+#include <cmath>    
+#include <numeric>  
 using namespace std;
 
-// Ручная реализация НОД (алгоритм Евклида)
-int gcd(int a, int b) {
-    while (b != 0) {
-        int r = a % b;
-        a = b;
-        b = r;
+// Проверка, является ли число value приближённо рациональным
+bool is_rational(double value, int max_denominator, int& numerator_out, int& denominator_out) {
+    const double EPS = 1e-9; // допустимая погрешность
+    for (int denom = 1; denom <= max_denominator; ++denom) {
+        int numer = round(value * denom); // предполагаемый числитель
+        double approx = static_cast<double>(numer) / denom; // приближённая дробь
+        if (fabs(value - approx) < EPS) {
+            // Сокращаем дробь
+            int g = gcd(numer, denom);
+            numerator_out = numer / g;
+            denominator_out = denom / g;
+            return true; // нашли подходящую рациональную аппроксимацию
+        }
     }
-    return a;
-}
-
-// Проверка на расходимость
-bool diverges(int a, int b) {
-    return b <= 1;
-}
-
-// Проверка на рациональность
-bool isRational(int a) {
-    return a == 1;
-}
-
-// Сокращение дроби
-pair<int, int> reduce(int num, int den) {
-    int g = gcd(num, den);
-    return {num / g, den / g};
+    return false; 
 }
 
 int main() {
     int a, b;
+    cout << "Введите a и b: ";
     cin >> a >> b;
 
-    if (diverges(a, b)) {
-        cout << "infinity\n";
-    } else if (!isRational(a)) {
-        cout << "irrational\n";
+    // Проверка сходимости ряда
+    if (b <= 1) {
+        cout << "infinity" << endl;
+        return 0;
+    }
+
+    double sum = 0.0;
+    double term;
+    const int MAX_N = 1000;     // максимум слагаемых
+    const double EPS = 1e-10;   // порог остановки
+
+    // Вычисляем сумму ряда
+    for (int n = 1; n <= MAX_N; ++n) {
+        term = pow(n, a) / pow(b, n); 
+        sum += term;
+        if (term < EPS) break; // если добавка стала мала — останавливаемся
+    }
+
+    // Пытаемся выразить сумму как рациональную дробь
+    int numer, denom;
+    if (is_rational(sum, 100000, numer, denom)) {
+        cout << "Сумма: " << numer << "/" << denom << endl;
     } else {
-        // Формула суммы для a = 1: S = b / (b - 1)^2
-        int num = b;
-        int den = (b - 1) * (b - 1);
-        auto [n, d] = reduce(num, den);
-        cout << n << "/" << d << "\n";
+        cout << "irrational" << endl;
     }
 
     return 0;

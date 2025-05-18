@@ -1,29 +1,35 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
+#include <deque>
 using namespace std;
 
 int main() {
     int n, m;
     cin >> n >> m;
     vector<int> A(n);
-    for (int &x : A) cin >> x;
+    for (int &x : A) 
+    cin >> x;
 
-    vector<long long> prefix(n + 1, 0);
-    for (int i = 0; i < n; ++i)
-        prefix[i + 1] = prefix[i] + A[i];
-
-    vector<long long> dp(n + 1, 0);  // dp[i] — макс. разница от i до конца
+    deque<long long> dq;
+    dq.push_back(0); // Базовый случай: dp[n] = 0
 
     for (int i = n - 1; i >= 0; --i) {
-        long long best = -1e18; // заменили LLONG_MIN
-        for (int k = 1; k <= m && i + k <= n; ++k) {
-            long long sum = prefix[i + k] - prefix[i];
-            best = max(best, sum - dp[i + k]);
+        long long best = -1e18; // Минимальное значение для инициализации
+    long long sum = 0;
+    int max_k = min(m, n - i); // Сколько чисел можно взять на текущем шаге     
+        // Используем только первые max_k элементов из дека
+        for (int k = 1; k <= max_k; ++k) {
+            sum += A[i + k - 1]; // Накопление суммы взятых чисел
+            if (k - 1 < dq.size()) {
+                best = max(best, sum - dq[k - 1]); // Оптимальный выбор
+            }
         }
-        dp[i] = best;
+        // Добавляем текущий best в начало дека
+        dq.push_front(best);
+        // Удерживаем размер дека не больше m
+        if (dq.size() > m) dq.pop_back();
     }
-    
-    cout << (dp[0] > 0 ? 1 : 0) << endl;
+
+    cout << (dq.front() > 0 ? 1 : 0) << endl;
     return 0;
 }

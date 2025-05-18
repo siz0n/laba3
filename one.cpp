@@ -13,7 +13,7 @@ double funcs(double x) {
     } else if (x >= 0.5 && x < 2) {
         return log(x) / x;
     } else {
-        return 2;
+        return 1;
     }
 }
 int main() {
